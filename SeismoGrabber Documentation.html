@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+  <meta charset="UTF-8">
+  <title>SeismoGrabber Documentation</title>
+  
+  
+  
+      <link rel="stylesheet" href="css/style.css">
+
+  
+</head>
+
+<body>
+
+  <!-- Free Code Camp Test Script 
+<script src="https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js"></script></script>-->
+<head><link rel="stylesheet" type="text/css" href="style.css"></head>
+<!-- Navbar for non-mobile users -->
+<nav id="navbar">
+  <header>SeismoGrabber Documentation</></header>
+  <ul>
+
+      <a class="nav-link" href="#Introduction_To_SeismoGrabber" rel="internal"><li>Introduction To SeismoGrabber</li></a>
+
+    <a class="nav-link" href="#System_Requirements" rel="internal"><li>System Requirements</li></a>
+
+    <a class="nav-link" href="#Configuration" rel="internal"><li>Configuration</li></a>
+
+      <a class="nav-link" href="#Running_SeismoGrabber" rel="internal"><li>Running SeismoGrabber</li></a>
+
+
+    <a class="nav-link" href="#Using_SG_Methods" rel="internal"><li>Using SG Methods</li></a>
+
+    <a class="nav-link" href="#References" id="ref-link" rel="internal"><li>References</li></a>
+  </ul>
+</nav>
+
+<!-- Main Document -->
+<main id="main-doc">
+  <section class="main-section" id="Introduction_To_SeismoGrabber">
+    <header>Introduction To SeismoGrabber</header>
+    <article>
+      <p>SeismoGrabber is a Python 3 wrapper around the seismological toolbox ObsPy made to facilitate easy, routine seismological observation from public datasets. The program is fed a list of IRIS accessible network stations, station-subset locations, instrument channels, and the start time of interest.</p>
+      <p>When SeismoGrabber is ran it will take this information and download all waveform data matching the criteria from the start-time to the present time of execution. Data is saved in a standard mSEED file, accompanied with a station inventory (KML file) and each instrument’s dataset plotted for visual investigation (PNG image files). Once complete, Seismograbber records the current time of execution and will attempt to use this as the start-time for the next run. The intended use is for data analysis workflows where routine monitoring or supplementation of seismological network data is required.</p>
+    </article>
+  </section>
+  <section  class="main-section" id="System_Requirements">
+    <header>System Requirements</header>
+    <article>
+    <p>Being a python script, SeismoGrabber can run on any system capable of Python 3.</p>
+      <ul><p><strong>Requirements:</strong></p>
+      <li>- Python 3</li>
+      <li>- Dependency libraries listed below, also listed in Requirements.txt
+      <li>- An open internet connection</li>
+      <li>- Configuration File (config.ini)</li>
+      <li>- SeismoGrabber.py & SeismoGrabberClasses.py
+    </ul>
+    <p style="text-align: center; font-size: 1.2em;"><a href="https://python-guide.readthedocs.io/en/latest/#" style="text-decoration: none; color: black;" target="blank"><strong>Click Here or an awesome non-affiliated Python & VirtualEnv setup guide.</strong></a>
+    <p>For routine execution of SeismoGrabber, it is recommended to create a virtual environment/envelope for SeismoGrabber/Obspy  data analysis. This way the program, automatic task schedulers, and bash/batch scripts can be ran without installing all of SeismoGrabber’s dependencies system-wide.</p>
+      <p style="margin: 10px;"><b>Example Setup</b></p>
+    <code># Ensure Python 3 & VirtualEnv is installed on the system.
+$ python3 --version
+$ virtualenv –version
+# Or
+$ python3 -V
+$ virtualenv -V
+
+# If either aren’t present, install them with an appropriate method (Link Above)
+# Next, create a directory (will happen automatically if you don’t) and name the new
+# environment for creation.
+
+$ virtualenv SeismoGrabber 
+# Or, for a totally isolated env
+$ virtualenv –no-site-packages Seismograbber
+
+# Make sure all of Seismograbber’s files are moved to this folder
+# (SeismoGrabber.py, SeismoGrabberClasses.py, config.ini, and a requirements.txt).
+
+# To activate the virtual environment navigate to the containing folder and run the # activation script:
+
+$ cd SeismoGrabber
+$ source activate
+# Or, depending on the scripts location inside the folder
+$ source bin/activate
+
+# Install SeismoGraber’s dependencies with the virtual environment active:
+$ pip3 install -r /SeismoGrabber/requirements.txt</code>  
+    </article>
+  </section>
+  <section class="main-section" id="Configuration">
+    <header>Configuration</header>
+    <article>
+      <p>Keeping the correct formatting for any configuration file is important. SeismoGrabber’s persistent configuration is a simple INI file with one category (NETWORK) and four items.</p>
+      <p>The first item is the IRIS station list which consists of comma separated network-station code pairs.</p>
+      <div><b style="margin-left: 10px;">Example</b>:
+        <code>[NETWORK]
+network_stn_list = (‘US’, ‘ISCO), (‘TA’, ‘Q24A’)</code></div>
+      <p style="margin-left: 10px;">This tells the program to look for waveforms in two stations; one called ISCO in the US network, and another called Q24A in the TA network.</p>
+      <div style="text-align: center;"><a href="https://earthquake.usgs.gov/monitoring/operations/network.php" style="text-decoration: none; color: rgb(129,76,6); font-size: 1.1em;" target="blank"><b>Common network codes can be found here</b></a></div><br><br>
+      <p>The next item is “channels” which is a short code indicating which instruments from each station to gather waveforms from ('*' asterisks act as a wildcard within SeismoGrabber, a single asterisk will return all).</p>
+      <p>Third is the “locations” item. Stations can have multiple locations, if a specific one is desired, enter it, if not leave as an '*' to return all station locations.</p>
+      <p>Finally the “last_fetch_time” item tells the program the start-time at which to request waveforms from the time frame of start-time to execution-time. <b>All times within SeismoGrabber are in UTC Date Time format (YYYY-MM-DDTHH:MM:S…Z) if times are not entered as such, SeismoGrabber will attempt to format it so.</b></p><br>
+      <p style="margin-left: 10px;"><b>Example "config.INI" Configuration File</b></p>
+        <code>[NETWORK]
+netwrk_stn_list = ('US', 'ISCO'), ('US', 'MVCO'), ('US', 'SDCO'), ('TA', 'O20A'), ('TA', 'Q24A'), ('TA', 'T25A')
+channels = *
+locations = *
+last_fetch_time = 2018-07-26T00:00:0.000000Z</code>
+      <p style="margin-left: 10px;"> This would tell SeismoGrabber to look at these six stations for waveforms from 2018-07-26 (UTC time) to Present with any location or channel configuration.</p>
+    </article>
+  </section>
+  <section class="main-section" id="Running_SeismoGrabber">
+    <header>Running SeismoGrabber</header>
+    <article>
+      <p>Once all SeismoGrabber's dependencies have been installed and the configuration file updated, SeismoGrabber can be ran just like any other python script.</p>
+      <p style="margin-left: 10px;"><b>Example Run</b></p>
+      <code># Once all requirements have been installed and the configuration file updated
+# to user specifications, SeismoGrabber is ready to be ran:
+
+$ cd SeismoGrabber
+# VirtualEnv activation can be omitted if a global install is done
+$ source activate
+$ python3 SeismoGrabber.py</code>
+      <p>Depending on how much data is being downloaded and network connections, full execution may take some time. If successful, the program will have displayed some dialogue about the different steps it was taking during execution. There should be a directory constructed for the day of the run (again in UTC time): YYYY/MM/DD. Inside this directory should be one KML station inventory file, one mSEED file containing all the data gathered, and a PNG image for each instrument’s data plotted out.</p>
+      <img src="https://imgur.com/czAoh79.png" title="Example ObsPy Waveform Plot" style="width: 70vw; margin: 1vh 1vw 1vh 1vw;">
+    </article>
+  </section>
+  <section class="main-section" id="Using_SG_Methods">
+    <header>Using SG Methods</header>
+    <article>
+      <p>SeismoGrabber is a simple wrapper for ObsPy, as such it only has two major classes: the directory manager (directory_manager),  and the configuration manager (config_manager). To use them individually in your own python workflow, import them from <em>SeismoGrabberClasses.py</em>.</p>
+      <p style="font-size: 1.1em;"><b>Directory Manager Class</b></p>
+      <p>The directory manager object has one main function… to make and manage the directory used to store all the downloads and plotted figures.</p>
+      <ul><p><strong>Methods:</strong></p><li>- update_time(UTC_Time)</li>
+        <li>- update_directory()</li>
+        <li>- make_directory()</li></ul>
+      <p style="margin-left: 10px;"><b>Usage example</b></p>
+      <code>>>> import SeismoGrabberClasses as *
+>>> dirman = directory_manager()
+
+# set a time used for making the directory names (normally is the current time grabbed
+# from the configuration manager).
+>>> time = “2018-08-01T12:00:0Z”
+>>> dirman.update_time(time)
+
+# creates the names associated with directory levels
+>>> dirman.update_directory()
+
+# Make the new directory
+>>> dirman.make_directory()</code>
+      <p style="margin-left: 10px;">This checks if the directory path associated with a folder for the desired Year/Month/Day has already been made and makes the path if it does not exist.</p>
+      <p style="font-size: 1.1em;"><b>Configuration Manager Class</b></p>
+      <p>The configuration manager class (Config_manager) is the other major object type in SeismoGrabber. It’s main responsibilities lie in retrieving the persistent configuration items from the configuration file and writing to the configuration file.</p>
+      <ul><p><strong>Methods:</strong></p>
+        <li>- update_time()</li>
+        <li>- update_start_time()</li>
+        <li>- return_real_time()</li>
+        <li>- obspy_request_info()</li>
+        <li>- get_network_config(filename=’config.ini’)</li>
+        <li>- write_network_config(filename=’config.ini’)</li>
+        <li>- startup_updater()</li></ul>
+      <p style="margin-left: 10px;"><b>Usage example</b></p>
+      <code>>>> import SeismoGrabberClasses as *
+>>> conman = config_manager()
+
+# Update current time
+>>> conman.update_time()
+
+# read all configuration info into internal attribute variables
+# ‘r’ precedes quotations to indicate the following string should be read as a raw string
+>>> conman.get_network_config(filename=r”/SeismoGrabber/config.ini”)
+
+# update the internal last-fetch-time to that of the read configuration files
+>>> conman.update_start_time()
+
+# Now we’ll change the desired instrument channel configuration from the standard All (*) to
+# a specific broadband analogue instrument
+>>> conman.channels = “BHZ”
+
+# Finally, we’ll write the newly updated configuration
+ >>>conman.write_network_config(filename=r”/SeismoGrabber/UpdatedConfig.ini”)
+
+#NOTE: SeismoGrabber.py always looks for a default configuration
+# file titled 'config.ini'</code>
+      <p style="margin-left: 10px;">If successful, the program should have displayed some dialogue about the different steps it was taking during execution. There should now be a directory constructed for the day of the run (again in UTC time): YYYY/MM/DD. Inside this directory should be one KML station inventory file, one mSEED file containing all the data gathered, and a PNG image for each instrument’s data plotted out.</p>
+    </article>
+  </section>
+  <section class="main-section" id="References">
+    <header>References</header>
+    <article>
+      <ul><p style="margin-bottom: 0.5em; font-size: 1.2em;"><b>ObsPy</b></p>
+        <li>M. Beyreuther, R. Barsch, L. Krischer, T. Megies, Y. Behr and J. Wassermann (2010)</li>
+        <li><a href="https://www.seismosoc.org/Publications/SRL/SRL_81/srl_81-3_es/" target="blank">ObsPy: A Python Toolbox for Seismology</a></li>
+        <li><a href="https://github.com/obspy/obspy/wiki" target="blank">ObsPy's GitHub Page</a></li>
+        <li>SRL, 81(3), 530-533</li>
+        <li>DOI: 10.1785/gssrl.81.3.530</li>
+        </article>
+      </section>
+</main>
+  
+  
+
+</body>
+
+</html>
