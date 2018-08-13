@@ -1,0 +1,9 @@
+Quick Start Guide
+
+1) Clone or download the repository
+2) Install required dependencies in requirements.txt
+3) Update the configuration file 'config.ini' to your desired station list, channels, locations, and start-time.
+4) Run SeismoGrabber.py
+
+For a more in-depth look at SeismoGrabber and it's methods see SeismoGrabberDocumentation.html (make sure the accompanying style sheet exists)
+or visit: https://codepen.io/kylecaltrider/full/VBMooq/
